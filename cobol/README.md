@@ -1,4 +1,4 @@
-COBOL implementation of the [GORBISTA language](https://esolangs.org/wiki/GORBITSA)
+COBOL implementation of the [GORBITSA language](https://esolangs.org/wiki/GORBITSA)
 
 Requires GnuCOBOL (Tested with version 3.0-rc1.0)
 
@@ -6,9 +6,9 @@ To build:
  run build.sh from this directory
 
 To run:
- run `out/gorbista <filename>`
+ run `out/gorbitsa <filename>`
 
- For example `out/gorbista programs/javid.gbt` which currently should output: 
+ For example `out/gorbitsa programs/javid.gbt` which currently should output: 
 
 ```
 Loaded: R

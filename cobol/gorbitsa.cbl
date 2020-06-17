@@ -1,5 +1,5 @@
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. GORBISTA.
+       PROGRAM-ID. GORBITSA.
 
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
@@ -15,7 +15,7 @@
          03 OPERAND-RECORD     PIC 9(3).
          
        WORKING-STORAGE SECTION.
-       01 GORBISTA.
+       01 GORBITSA.
          03 PC                 PIC 9(3).
          03 X                  PIC 9(3).
          03 RAM                PIC 9(3) OCCURS 256 TIMES.
