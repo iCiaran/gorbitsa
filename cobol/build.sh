@@ -1,3 +1,3 @@
 #!/bin/bash
 
-cobc -x -o out/gorbista -O3 gorbista.cbl 
+cobc -x -O3 -W -o out/gorbista gorbista.cbl 
