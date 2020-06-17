@@ -42,6 +42,7 @@
 
        LOAD-PROGRAM.
       *-------------*
++DEBUG*    DISPLAY "==== START LOADING PROGRAM ====" END-DISPLAY.
            ACCEPT ARG-COUNT 
              FROM ARGUMENT-NUMBER
            END-ACCEPT.
@@ -63,13 +64,15 @@
                AT END 
                  MOVE "Y" TO EOF
                NOT AT END
-+DEBUG*          DISPLAY "Loaded: " INSTRUCTION (FILE-LINE) END-DISPLAY
++DEBUG*          DISPLAY "  -- " FILE-LINE " : "
++DEBUG*                INSTRUCTION (FILE-LINE) END-DISPLAY
                  ADD 1 TO FILE-LINE 
                    GIVING FILE-LINE
                  END-ADD
              END-READ
            END-PERFORM.
            CLOSE PROGRAM-FILE.
++DEBUG*    DISPLAY "==== END LOADING PROGRAM ====" END-DISPLAY.
        LOAD-PROGRAM-FN.
       *----------------*
            EXIT.
@@ -93,7 +96,7 @@
        I-NOOP.
       *-----*
 +DEBUG*    PERFORM PRINT-DEBUG THRU PRINT-DEBUG-FN.
-+DEBUG*    DISPLAY"==== EXECUTING NOOP ====".
++DEBUG*    DISPLAY "==== EXECUTING NOOP ====" END-DISPLAY.
            ADD 1 TO PC END-ADD.
        I-NOOP-FN.
       *--------*
@@ -102,7 +105,7 @@
        I-TRANSMIT.
       *-----------*
 +DEBUG*    PERFORM PRINT-DEBUG THRU PRINT-DEBUG-FN.
-+DEBUG*    DISPLAY"==== EXECUTING TRANSMIT ====".
++DEBUG*    DISPLAY "==== EXECUTING TRANSMIT ====" END-DISPLAY.
            DISPLAY X END-DISPLAY.
            ADD 1 TO PC END-ADD.
 
@@ -113,11 +116,22 @@
        I-SET.
       *-----------*
 +DEBUG*    PERFORM PRINT-DEBUG THRU PRINT-DEBUG-FN.
-+DEBUG*    DISPLAY"==== EXECUTING SET ====".
-+DEBUG*    DISPLAY"  -- Setting X to " OPERAND OF INSTRUCTION (PC).
++DEBUG*    DISPLAY "==== EXECUTING SET ====" END-DISPLAY.
++DEBUG*    DISPLAY "  -- Setting X to " 
++DEBUG*         OPERAND OF INSTRUCTION (PC)  END-DISPLAY.
            MOVE OPERAND OF INSTRUCTION (PC) TO X.
            ADD 1 TO PC END-ADD.
        I-SET-FN.
       *--------------*
            EXIT.
 
+       PRINT-DEBUG.
+      *------------*
+           DISPLAY "==== DEGUG INFO ===="  END-DISPLAY.
+           DISPLAY "  -- Program counter = " PC END-DISPLAY.
+           DISPLAY "  -- Register X      = " X  END-DISPLAY.
+           DISPLAY "  -- Instruction     = " 
+                              INSTRUCTION (PC)  END-DISPLAY.
+       PRINT-DEBUG-FN.
+      *---------------*
+           EXIT.

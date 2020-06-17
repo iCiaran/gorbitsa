@@ -3,10 +3,13 @@ COBOL implementation of the [GORBITSA language](https://esolangs.org/wiki/GORBIT
 Requires GnuCOBOL (Tested with version 3.0-rc1.0)
 
 To build:
- run build.sh from this directory
+ Run `build.sh` from this directory
+
+To build in debug mode:
+ Run `build.sh -d` from this directory
 
 To run:
- run `out/gorbitsa <filename>`
+ Run `out/gorbitsa <filename>`
 
  For example `out/gorbitsa programs/javid.gbt` which currently should output: 
 
