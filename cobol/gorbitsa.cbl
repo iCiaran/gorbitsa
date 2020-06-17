@@ -79,6 +79,7 @@
 
        RUN-PROGRAM.
       *------------*
++DEBUG*    DISPLAY "==== START RUNNING PROGRAM ====" END-DISPLAY.
            PERFORM UNTIL PC > 256
              EVALUATE OPCODE OF INSTRUCTION (PC)
                WHEN "T"
@@ -89,6 +90,7 @@
                  PERFORM I-NOOP THRU I-NOOP-FN
              END-EVALUATE
            END-PERFORM.
++DEBUG*    DISPLAY "==== END RUNNING PROGRAM ====" END-DISPLAY.
        RUN-PROGRAM-FN.
       *---------------*
            EXIT.
@@ -96,7 +98,7 @@
        I-NOOP.
       *-----*
 +DEBUG*    PERFORM PRINT-DEBUG THRU PRINT-DEBUG-FN.
-+DEBUG*    DISPLAY "==== EXECUTING NOOP ====" END-DISPLAY.
++DEBUG*    DISPLAY "  == EXECUTING NOOP" END-DISPLAY.
            ADD 1 TO PC END-ADD.
        I-NOOP-FN.
       *--------*
@@ -105,7 +107,7 @@
        I-TRANSMIT.
       *-----------*
 +DEBUG*    PERFORM PRINT-DEBUG THRU PRINT-DEBUG-FN.
-+DEBUG*    DISPLAY "==== EXECUTING TRANSMIT ====" END-DISPLAY.
++DEBUG*    DISPLAY "  == EXECUTING TRANSMIT" END-DISPLAY.
            DISPLAY X END-DISPLAY.
            ADD 1 TO PC END-ADD.
 
@@ -116,8 +118,8 @@
        I-SET.
       *-----------*
 +DEBUG*    PERFORM PRINT-DEBUG THRU PRINT-DEBUG-FN.
-+DEBUG*    DISPLAY "==== EXECUTING SET ====" END-DISPLAY.
-+DEBUG*    DISPLAY "  -- Setting X to " 
++DEBUG*    DISPLAY "  == EXECUTING SET" END-DISPLAY.
++DEBUG*    DISPLAY "   - Setting X to " 
 +DEBUG*         OPERAND OF INSTRUCTION (PC)  END-DISPLAY.
            MOVE OPERAND OF INSTRUCTION (PC) TO X.
            ADD 1 TO PC END-ADD.
@@ -127,11 +129,12 @@
 
        PRINT-DEBUG.
       *------------*
-           DISPLAY "==== DEGUG INFO ===="  END-DISPLAY.
-           DISPLAY "  -- Program counter = " PC END-DISPLAY.
-           DISPLAY "  -- Register X      = " X  END-DISPLAY.
-           DISPLAY "  -- Instruction     = " 
-                              INSTRUCTION (PC)  END-DISPLAY.
+           DISPLAY "==== DEGUG"
+                   " -- PC:" PC
+                   " - X:"   X
+                   "- I:"   INSTRUCTION (PC)
+                   " ===="  
+           END-DISPLAY.
        PRINT-DEBUG-FN.
       *---------------*
            EXIT.
