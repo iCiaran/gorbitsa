@@ -10,7 +10,7 @@
        DATA DIVISION.
        FILE SECTION.
        FD PROGRAM-FILE.
-       01 INSTRUCTION-RECORD OCCURS 256 TIMES.
+       01 INSTRUCTION-RECORD.
          03 OPCODE-RECORD      PIC X(1).
          03 OPERAND-RECORD     PIC X(3).
          
@@ -69,13 +69,13 @@
 
            OPEN INPUT PROGRAM-FILE.
            PERFORM UNTIL EOF = "Y"
-             READ PROGRAM-FILE INTO INSTRUCTION-RECORD (LNUM)
+             READ PROGRAM-FILE
                AT END 
                  MOVE "Y" TO EOF
                NOT AT END
-                 MOVE OPCODE-RECORD  OF INSTRUCTION-RECORD (LNUM)
+                 MOVE OPCODE-RECORD  OF INSTRUCTION-RECORD 
                           TO OPCODE  OF INSTRUCTION(LNUM)
-                 MOVE OPERAND-RECORD OF INSTRUCTION-RECORD (LNUM)
+                 MOVE OPERAND-RECORD OF INSTRUCTION-RECORD
                           TO OPERAND OF INSTRUCTION(LNUM)
 +DEBUG*          DISPLAY "  -- " LNUM " : "
 +DEBUG*                INSTRUCTION (LNUM) END-DISPLAY
@@ -103,6 +103,8 @@
                  PERFORM I-OFFER    THRU I-OFFER-FN
                WHEN "R"
                  PERFORM I-RECEIVE  THRU I-RECEIVE-FN
+               WHEN "B"
+                 PERFORM I-BRANCH   THRU I-BRANCH-FN
                WHEN "I"
                  PERFORM I-INCREASE THRU I-INCREASE-FN
                WHEN "T"
@@ -200,6 +202,24 @@
 +DEBUG*    DISPLAY "   - Received " X " from input." END-DISPLAY. 
            ADD 1 TO PC END-ADD.
        I-RECEIVE-FN.
+      *--------------*
+           EXIT.
+
+       I-BRANCH.
+      *-----------*
++DEBUG*    PERFORM PRINT-DEBUG THRU PRINT-DEBUG-FN.
++DEBUG*    DISPLAY "  == EXECUTING BRANCH" END-DISPLAY.
+           IF X = 0
+              MOVE OPERAND OF INSTRUCTION (PC) TO IDX-P     OF IDX 
+              MOVE "I"                         TO DIRECTION OF IDX
+              PERFORM CORRECT-INDEX THRU CORRECT-INDEX-FN
++DEBUG*    DISPLAY "   - Branching to ["IDX-P OF IDX"]("
++DEBUG*                                 IDX-C OF IDX")" END-DISPLAY
+              MOVE IDX-C OF IDX TO PC
+           ELSE
+             ADD 1 TO PC END-ADD
+           END-IF.
+       I-BRANCH-FN.
       *--------------*
            EXIT.
 

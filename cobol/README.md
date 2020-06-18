@@ -18,7 +18,7 @@ Implemented instructions:
 - [x] G 
 - [x] O
 - [x] R
-- [ ] B
+- [x] B
 - [x] I
 - [x] T
 - [x] S
