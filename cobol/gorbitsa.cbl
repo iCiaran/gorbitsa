@@ -10,9 +10,9 @@
        DATA DIVISION.
        FILE SECTION.
        FD PROGRAM-FILE.
-       01 INSTRUCTION-RECORD.
+       01 INSTRUCTION-RECORD OCCURS 256 TIMES.
          03 OPCODE-RECORD      PIC X(1).
-         03 OPERAND-RECORD     PIC 9(3).
+         03 OPERAND-RECORD     PIC X(3).
          
        WORKING-STORAGE SECTION.
        01 GORBITSA.
@@ -26,7 +26,7 @@
        01 ARG-COUNT            PIC 9(3).
        01 ERROR-STRING         PIC X(100). 
        01 EOF                  PIC X(1) VALUE "N".
-       01 FILE-LINE            PIC 9(3) VALUE 1.
+       01 LNUM                 PIC 9(3) VALUE 1.
 
        PROCEDURE DIVISION.
            PERFORM LOAD-PROGRAM THRU LOAD-PROGRAM-FN.
@@ -60,14 +60,18 @@
 
            OPEN INPUT PROGRAM-FILE.
            PERFORM UNTIL EOF = "Y"
-             READ PROGRAM-FILE INTO INSTRUCTION (FILE-LINE)
+             READ PROGRAM-FILE INTO INSTRUCTION-RECORD (LNUM)
                AT END 
                  MOVE "Y" TO EOF
                NOT AT END
+                 MOVE OPCODE-RECORD  OF INSTRUCTION-RECORD (LNUM)
+                          TO OPCODE  OF INSTRUCTION(LNUM)
+                 MOVE OPERAND-RECORD OF INSTRUCTION-RECORD (LNUM)
+                          TO OPERAND OF INSTRUCTION(LNUM)
 +DEBUG*          DISPLAY "  -- " FILE-LINE " : "
 +DEBUG*                INSTRUCTION (FILE-LINE) END-DISPLAY
-                 ADD 1 TO FILE-LINE 
-                   GIVING FILE-LINE
+                 ADD 1 TO LNUM 
+                   GIVING LNUM
                  END-ADD
              END-READ
            END-PERFORM.
@@ -82,6 +86,8 @@
 +DEBUG*    DISPLAY "==== START RUNNING PROGRAM ====" END-DISPLAY.
            PERFORM UNTIL PC > 256
              EVALUATE OPCODE OF INSTRUCTION (PC)
+               WHEN "I"
+                 PERFORM I-INCREASE THRU I-INCREASE-FN
                WHEN "T"
                  PERFORM I-TRANSMIT THRU I-TRANSMIT-FN
                WHEN "S"
@@ -104,13 +110,28 @@
       *--------*
            EXIT.
 
+       I-INCREASE.
+      *-----------*
++DEBUG*    PERFORM PRINT-DEBUG THRU PRINT-DEBUG-FN.
++DEBUG*    DISPLAY "  == EXECUTING INCREASE" END-DISPLAY.
++DEBUG*    DISPLAY "   - Adding " OPERAND OF INSTRUCTION (PC)
++DEBUG*                              " to X" END-DISPLAY.
+           ADD OPERAND OF INSTRUCTION (PC) TO X GIVING X END-ADD.
+           IF X > 255
++DEBUG*    DISPLAY "   - Overflowed X="X END-DISPLAY
+             SUBTRACT 256 FROM X END-SUBTRACT
+           END-IF.
+           ADD 1 TO PC END-ADD.
+       I-INCREASE-FN.
+      *--------------*
+           EXIT.
+
        I-TRANSMIT.
       *-----------*
 +DEBUG*    PERFORM PRINT-DEBUG THRU PRINT-DEBUG-FN.
 +DEBUG*    DISPLAY "  == EXECUTING TRANSMIT" END-DISPLAY.
            DISPLAY X END-DISPLAY.
            ADD 1 TO PC END-ADD.
-
        I-TRANSMIT-FN.
       *--------------*
            EXIT.
@@ -132,7 +153,7 @@
            DISPLAY "==== DEGUG"
                    " -- PC:" PC
                    " - X:"   X
-                   "- I:"   INSTRUCTION (PC)
+                   " - I:"   INSTRUCTION (PC)
                    " ===="  
            END-DISPLAY.
        PRINT-DEBUG-FN.
