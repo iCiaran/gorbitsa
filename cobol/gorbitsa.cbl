@@ -27,6 +27,10 @@
        01 ERROR-STRING         PIC X(100). 
        01 EOF                  PIC X(1) VALUE "N".
        01 LNUM                 PIC 9(3) VALUE 1.
+       01 IDX.
+         03 DIRECTION          PIC X(1).
+         03 IDX-P              PIC 9(3).
+         03 IDX-C              PIC 9(3).
 
        PROCEDURE DIVISION.
            PERFORM LOAD-PROGRAM THRU LOAD-PROGRAM-FN.
@@ -42,7 +46,8 @@
 
        LOAD-PROGRAM.
       *-------------*
-+DEBUG*    DISPLAY "==== START LOADING PROGRAM ====" END-DISPLAY.
++DEBUG*    DISPLAY "====      START LOADING PROGRAM       ====" 
++DEBUG*    END-DISPLAY.
            ACCEPT ARG-COUNT 
              FROM ARGUMENT-NUMBER
            END-ACCEPT.
@@ -68,35 +73,42 @@
                           TO OPCODE  OF INSTRUCTION(LNUM)
                  MOVE OPERAND-RECORD OF INSTRUCTION-RECORD (LNUM)
                           TO OPERAND OF INSTRUCTION(LNUM)
-+DEBUG*          DISPLAY "  -- " FILE-LINE " : "
-+DEBUG*                INSTRUCTION (FILE-LINE) END-DISPLAY
++DEBUG*          DISPLAY "  -- " LNUM " : "
++DEBUG*                INSTRUCTION (LNUM) END-DISPLAY
                  ADD 1 TO LNUM 
                    GIVING LNUM
                  END-ADD
              END-READ
            END-PERFORM.
            CLOSE PROGRAM-FILE.
-+DEBUG*    DISPLAY "==== END LOADING PROGRAM ====" END-DISPLAY.
++DEBUG*    DISPLAY "====       END LOADING PROGRAM        ====" 
++DEBUG*    END-DISPLAY.
        LOAD-PROGRAM-FN.
       *----------------*
            EXIT.
 
        RUN-PROGRAM.
       *------------*
-+DEBUG*    DISPLAY "==== START RUNNING PROGRAM ====" END-DISPLAY.
++DEBUG*    DISPLAY "====      START RUNNING PROGRAM       ====" 
++DEBUG*    END-DISPLAY.
            PERFORM UNTIL PC > 256
              EVALUATE OPCODE OF INSTRUCTION (PC)
+               WHEN "G"
+                 PERFORM I-GRAB     THRU I-GRAB-FN
+               WHEN "O"
+                 PERFORM I-OFFER    THRU I-OFFER-FN
                WHEN "I"
                  PERFORM I-INCREASE THRU I-INCREASE-FN
                WHEN "T"
                  PERFORM I-TRANSMIT THRU I-TRANSMIT-FN
                WHEN "S"
-                 PERFORM I-SET THRU I-SET-FN
+                 PERFORM I-SET      THRU I-SET-FN
                WHEN OTHER
-                 PERFORM I-NOOP THRU I-NOOP-FN
+                 PERFORM I-NOOP     THRU I-NOOP-FN
              END-EVALUATE
            END-PERFORM.
-+DEBUG*    DISPLAY "==== END RUNNING PROGRAM ====" END-DISPLAY.
++DEBUG*    DISPLAY "====       END RUNNING PROGRAM        ====" 
++DEBUG*    END-DISPLAY.
        RUN-PROGRAM-FN.
       *---------------*
            EXIT.
@@ -104,10 +116,39 @@
        I-NOOP.
       *-----*
 +DEBUG*    PERFORM PRINT-DEBUG THRU PRINT-DEBUG-FN.
-+DEBUG*    DISPLAY "  == EXECUTING NOOP" END-DISPLAY.
            ADD 1 TO PC END-ADD.
        I-NOOP-FN.
       *--------*
+           EXIT.
+
+       I-GRAB.
+      *-----------*
++DEBUG*    PERFORM PRINT-DEBUG THRU PRINT-DEBUG-FN.
++DEBUG*    DISPLAY "  == EXECUTING GRAB" END-DISPLAY.
+           MOVE OPERAND OF INSTRUCTION (PC) TO IDX-P       OF IDX.
+           MOVE "I"                         TO DIRECTION   OF IDX.
+           PERFORM CORRECT-INDEX THRU CORRECT-INDEX-FN.
+           MOVE RAM (IDX-C OF IDX) TO X.
++DEBUG*    DISPLAY "   - Grabbed " X " from [" 
++DEBUG*    OPERAND OF INSTRUCTION(PC) "](" IDX-C OF IDX ")" END-DISPLAY.
+           ADD 1 TO PC END-ADD.
+       I-GRAB-FN.
+      *--------------*
+           EXIT.
+
+       I-OFFER.
+      *-----------*
++DEBUG*    PERFORM PRINT-DEBUG THRU PRINT-DEBUG-FN.
++DEBUG*    DISPLAY "  == EXECUTING OFFER" END-DISPLAY.
+           MOVE OPERAND OF INSTRUCTION (PC) TO IDX-P       OF IDX.
+           MOVE "I"                         TO DIRECTION   OF IDX.
+           PERFORM CORRECT-INDEX THRU CORRECT-INDEX-FN.
+           MOVE X TO RAM (IDX-C OF IDX).
++DEBUG*    DISPLAY "   - Offered " X " to [" OPERAND OF INSTRUCTION(PC)
++DEBUG*                  "](" IDX-C OF IDX ")" END-DISPLAY.
+           ADD 1 TO PC END-ADD.
+       I-OFFER-FN.
+      *--------------*
            EXIT.
 
        I-INCREASE.
@@ -158,4 +199,16 @@
            END-DISPLAY.
        PRINT-DEBUG-FN.
       *---------------*
+           EXIT.
+
+       CORRECT-INDEX.
+      *--------------*
+      * GORBITSA programs are 0-indexed, our memory is 1-indexed
+           IF DIRECTION OF IDX = "O"
+             SUBTRACT 1 FROM IDX-C GIVING IDX-P END-SUBTRACT
+           ELSE 
+              ADD 1 TO IDX-P GIVING IDX-C END-ADD
+           END-IF.
+       CORRECT-INDEX-FN.
+      *-----------------*
            EXIT.
