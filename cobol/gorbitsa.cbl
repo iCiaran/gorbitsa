@@ -31,6 +31,10 @@
          03 DIRECTION          PIC X(1).
          03 IDX-P              PIC 9(3).
          03 IDX-C              PIC 9(3).
+       01 RECEIVE-IN           PIC X(30).
+       01 RECEIVE-IN-X         PIC 9(3).
+       01 RECEIVE-LEN          PIC 9(2).
+       01 I                    PIC 9(2).
 
        PROCEDURE DIVISION.
            PERFORM LOAD-PROGRAM THRU LOAD-PROGRAM-FN.
@@ -97,6 +101,8 @@
                  PERFORM I-GRAB     THRU I-GRAB-FN
                WHEN "O"
                  PERFORM I-OFFER    THRU I-OFFER-FN
+               WHEN "R"
+                 PERFORM I-RECEIVE  THRU I-RECEIVE-FN
                WHEN "I"
                  PERFORM I-INCREASE THRU I-INCREASE-FN
                WHEN "T"
@@ -148,6 +154,52 @@
 +DEBUG*                  "](" IDX-C OF IDX ")" END-DISPLAY.
            ADD 1 TO PC END-ADD.
        I-OFFER-FN.
+      *--------------*
+           EXIT.
+
+       I-RECEIVE.
+      *-----------*
++DEBUG*    PERFORM PRINT-DEBUG THRU PRINT-DEBUG-FN.
++DEBUG*    DISPLAY "  == EXECUTING RECEIVE" END-DISPLAY.
+           DISPLAY "> " WITH NO ADVANCING END-DISPLAY.
+           ACCEPT RECEIVE-IN END-ACCEPT.
++DEBUG*    DISPLAY "   - Accepted: "RECEIVE-IN END-DISPLAY.
+           IF RECEIVE-IN(1:3) IS NUMERIC
++DEBUG*    DISPLAY "   - Input is numeric." END-DISPLAY 
+             IF RECEIVE-IN(1:3) < 256
+               MOVE RECEIVE-IN(1:3) TO X
+             ELSE
+               STRING 
+                 "I-RECEIVE | Number is too big: " DELIMITED BY SIZE
+                 RECEIVE-IN DELIMITED BY SPACE
+                 INTO ERROR-STRING
+               END-STRING
+               GO EXIT-PROGRAM
+             END-IF
+           ELSE
++DEBUG*    DISPLAY "   - Input is not numeric." END-DISPLAY 
+             MOVE 0 TO RECEIVE-LEN
+             PERFORM VARYING I FROM 1 BY 1 UNTIL RECEIVE-IN(I:1) = SPACE
+                                           OR I > 30
+               IF RECEIVE-IN(I:1) NOT = SPACE
+                 ADD 1 TO RECEIVE-LEN END-ADD
+               END-IF
+             END-PERFORM
+             IF RECEIVE-LEN = 1
+               MOVE FUNCTION ORD(RECEIVE-IN(1:1)) TO X
+             ELSE
+               STRING 
+                 "I-RECEIVE | Can only receive single letters: " 
+                 DELIMITED BY SIZE
+                 RECEIVE-IN DELIMITED BY SPACE
+                 INTO ERROR-STRING
+               END-STRING
+               GO EXIT-PROGRAM
+             END-IF
+           END-IF.
++DEBUG*    DISPLAY "   - Received " X " from input." END-DISPLAY. 
+           ADD 1 TO PC END-ADD.
+       I-RECEIVE-FN.
       *--------------*
            EXIT.
 

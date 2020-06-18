@@ -11,22 +11,23 @@ To build in debug mode:
 To run:
  Run `out/gorbitsa <filename>`
 
- For example `out/gorbitsa programs/javid.gbt` which currently should output: 
+ For example `out/gorbitsa programs/javid.gbt` 
 
-```
-Loaded: R
-Loaded: O201
-Loaded: R
-Loaded: O202
-Loaded: S0
-Loaded: O203
-Loaded: G202
-Loaded: A202
-Loaded: O202
-Loaded: G201
-Loaded: I255
-Loaded: O201
-Loaded: B6
-Loaded: G202
-Loaded: T
-```
+Implemented instructions: 
+
+- [x] G 
+- [x] O
+- [x] R
+- [ ] B
+- [x] I
+- [x] T
+- [x] S
+- [ ] A
+- [ ] g
+- [ ] o
+- [ ] r
+- [ ] b
+- [ ] i
+- [ ] t
+- [ ] s
+- [ ] a
