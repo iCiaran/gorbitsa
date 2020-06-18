@@ -95,7 +95,7 @@
       *------------*
 +DEBUG*    DISPLAY "====      START RUNNING PROGRAM       ====" 
 +DEBUG*    END-DISPLAY.
-           PERFORM UNTIL PC > 256
+           PERFORM UNTIL PC >= 256
              EVALUATE OPCODE OF INSTRUCTION (PC)
                WHEN "G"
                  PERFORM I-GRAB     THRU I-GRAB-FN
@@ -111,6 +111,8 @@
                  PERFORM I-TRANSMIT THRU I-TRANSMIT-FN
                WHEN "S"
                  PERFORM I-SET      THRU I-SET-FN
+               WHEN "A"
+                 PERFORM I-ADD      THRU I-ADD-FN
                WHEN OTHER
                  PERFORM I-NOOP     THRU I-NOOP-FN
              END-EVALUATE
@@ -258,6 +260,25 @@
            MOVE OPERAND OF INSTRUCTION (PC) TO X.
            ADD 1 TO PC END-ADD.
        I-SET-FN.
+      *--------------*
+           EXIT.
+
+       I-ADD.
+      *-----------*
++DEBUG*    PERFORM PRINT-DEBUG THRU PRINT-DEBUG-FN.
++DEBUG*    DISPLAY "  == EXECUTING ADD" END-DISPLAY.
+           MOVE OPERAND OF INSTRUCTION (PC) TO IDX-P     OF IDX.
+           MOVE "I"                         TO DIRECTION OF IDX.
+           PERFORM CORRECT-INDEX THRU CORRECT-INDEX-FN.
++DEBUG*    DISPLAY "   - Adding " RAM(IDX-C OF IDX) " to X from "
++DEBUG*            "["IDX-P OF IDX"]("IDX-C OF IDX")" END-DISPLAY.
+           ADD RAM(IDX-C OF IDX) TO X END-ADD.
+           IF X > 255
++DEBUG*    DISPLAY "   - Overflowed X="X END-DISPLAY
+             SUBTRACT 256 FROM X END-SUBTRACT
+           END-IF.
+           ADD 1 TO PC END-ADD.
+       I-ADD-FN.
       *--------------*
            EXIT.
 

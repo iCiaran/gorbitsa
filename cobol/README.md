@@ -22,7 +22,7 @@ Implemented instructions:
 - [x] I
 - [x] T
 - [x] S
-- [ ] A
+- [x] A
 - [ ] g
 - [ ] o
 - [ ] r
