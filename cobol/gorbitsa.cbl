@@ -97,6 +97,7 @@
 +DEBUG*    END-DISPLAY.
            PERFORM UNTIL PC >= 256
              EVALUATE OPCODE OF INSTRUCTION (PC)
+      * Base instructions
                WHEN "G"
                  PERFORM I-GRAB     THRU I-GRAB-FN
                WHEN "O"
@@ -113,6 +114,11 @@
                  PERFORM I-SET      THRU I-SET-FN
                WHEN "A"
                  PERFORM I-ADD      THRU I-ADD-FN
+      * Extended instructions
+               WHEN "g"
+                 PERFORM E-GRAB     THRU E-GRAB-FN
+               WHEN "o"
+                 PERFORM E-OFFER    THRU E-OFFER-FN
                WHEN OTHER
                  PERFORM I-NOOP     THRU I-NOOP-FN
              END-EVALUATE
@@ -130,6 +136,14 @@
        I-NOOP-FN.
       *--------*
            EXIT.
+
+      *================================================================*
+      *                     ___     _     ___   ___                    *
+      *                    | _ )   /_\   / __| | __|                   *
+      *                    | _ \  / _ \  \__ \ | _|                    *
+      *                    |___/ /_/ \_\ |___/ |___|                   *
+      *                                                                *
+      *================================================================*
 
        I-GRAB.
       *-----------*
@@ -280,6 +294,54 @@
            ADD 1 TO PC END-ADD.
        I-ADD-FN.
       *--------------*
+           EXIT.
+
+      *================================================================*
+      *      ___  __  __  _____   ___   _  _   ___    ___   ___        *
+      *     | __| \ \/ / |_   _| | __| | \| | |   \  | __| |   \       *
+      *     | _|   >  <    | |   | _|  | .` | | |) | | _|  | |) |      *
+      *     |___| /_/\_\   |_|   |___| |_|\_| |___/  |___| |___/       *
+      *                                                                *
+      *================================================================*
+
+       E-GRAB.
+      *------*
++DEBUG*    PERFORM PRINT-DEBUG THRU PRINT-DEBUG-FN.
++DEBUG*    DISPLAY "  == EXECUTING E-GRAB" END-DISPLAY.
+           MOVE OPERAND OF INSTRUCTION (PC) TO IDX-P     OF IDX.
+           MOVE "I"                         TO DIRECTION OF IDX.
+           PERFORM CORRECT-INDEX          THRU CORRECT-INDEX-FN.
++DEBUG*    DISPLAY "   - Indirect address is ["IDX-P OF IDX"]("
++DEBUG*            IDX-C OF IDX")" END-DISPLAY.
+           MOVE RAM (IDX-C)                 TO IDX-P     OF IDX.
+           PERFORM CORRECT-INDEX          THRU CORRECT-INDEX-FN.
++DEBUG*    DISPLAY "   - Direct address is   ["IDX-P OF IDX"]("
++DEBUG*            IDX-C OF IDX")" END-DISPLAY.
+           MOVE RAM (IDX-C)                 TO X.
++DEBUG*    DISPLAY "Grabbing " RAM (IDX-C) " into X" END-DISPLAY.
+           ADD 1 TO PC END-ADD.
+       E-GRAB-FN.
+      *----------*
+           EXIT.
+           
+       E-OFFER.
+      *------*
++DEBUG*    PERFORM PRINT-DEBUG THRU PRINT-DEBUG-FN.
++DEBUG*    DISPLAY "  == EXECUTING E-OFFER" END-DISPLAY.
+           MOVE OPERAND OF INSTRUCTION (PC) TO IDX-P     OF IDX.
+           MOVE "I"                         TO DIRECTION OF IDX.
+           PERFORM CORRECT-INDEX          THRU CORRECT-INDEX-FN.
++DEBUG*    DISPLAY "   - Indirect address is ["IDX-P OF IDX"]("
++DEBUG*            IDX-C OF IDX")" END-DISPLAY.
+           MOVE RAM (IDX-C)                 TO IDX-P     OF IDX.
+           PERFORM CORRECT-INDEX          THRU CORRECT-INDEX-FN.
++DEBUG*    DISPLAY "   - Direct address is   ["IDX-P OF IDX"]("
++DEBUG*            IDX-C OF IDX")" END-DISPLAY.
+           MOVE X                           TO RAM (IDX-C).
++DEBUG*    DISPLAY "Offering " X " to " RAM (IDX-C) END-DISPLAY.
+           ADD 1 TO PC END-ADD.
+       E-OFFER-FN.
+      *----------*
            EXIT.
 
        PRINT-DEBUG.

@@ -23,8 +23,8 @@ Implemented instructions:
 - [x] T
 - [x] S
 - [x] A
-- [ ] g
-- [ ] o
+- [x] g
+- [x] o
 - [ ] r
 - [ ] b
 - [ ] i
