@@ -168,7 +168,15 @@
            DISPLAY "> " WITH NO ADVANCING END-DISPLAY.
            ACCEPT RECEIVE-IN END-ACCEPT.
 +DEBUG*    DISPLAY "   - Accepted: "RECEIVE-IN END-DISPLAY.
-           IF RECEIVE-IN(1:3) IS NUMERIC
+           MOVE 0 TO RECEIVE-LEN.
+           PERFORM VARYING I FROM 1 BY 1 UNTIL RECEIVE-IN(I:1) = SPACE
+                                                             OR I > 30
+             IF RECEIVE-IN(I:1) NOT = SPACE
+               ADD 1 TO RECEIVE-LEN END-ADD
+             END-IF
+           END-PERFORM.
+
+           IF RECEIVE-IN(1:RECEIVE-LEN) IS NUMERIC
 +DEBUG*    DISPLAY "   - Input is numeric." END-DISPLAY 
              IF RECEIVE-IN(1:3) < 256
                MOVE RECEIVE-IN(1:3) TO X
@@ -182,13 +190,6 @@
              END-IF
            ELSE
 +DEBUG*    DISPLAY "   - Input is not numeric." END-DISPLAY 
-             MOVE 0 TO RECEIVE-LEN
-             PERFORM VARYING I FROM 1 BY 1 UNTIL RECEIVE-IN(I:1) = SPACE
-                                           OR I > 30
-               IF RECEIVE-IN(I:1) NOT = SPACE
-                 ADD 1 TO RECEIVE-LEN END-ADD
-               END-IF
-             END-PERFORM
              IF RECEIVE-LEN = 1
                MOVE FUNCTION ORD(RECEIVE-IN(1:1)) TO X
              ELSE
