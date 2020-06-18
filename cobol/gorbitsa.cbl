@@ -178,9 +178,8 @@
 
            IF RECEIVE-IN(1:RECEIVE-LEN) IS NUMERIC
 +DEBUG*    DISPLAY "   - Input is numeric." END-DISPLAY 
-             IF RECEIVE-IN(1:3) < 256
-               MOVE RECEIVE-IN(1:3) TO X
-             ELSE
+             MOVE RECEIVE-IN(1:3) TO X
+             IF X > 255
                STRING 
                  "I-RECEIVE | Number is too big: " DELIMITED BY SIZE
                  RECEIVE-IN DELIMITED BY SPACE
