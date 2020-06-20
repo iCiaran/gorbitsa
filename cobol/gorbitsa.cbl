@@ -119,6 +119,8 @@
                  PERFORM E-GRAB     THRU E-GRAB-FN
                WHEN "o"
                  PERFORM E-OFFER    THRU E-OFFER-FN
+               WHEN "r"
+                 PERFORM E-RECEIVE  THRU E-RECEIVE-FN
                WHEN OTHER
                  PERFORM I-NOOP     THRU I-NOOP-FN
              END-EVALUATE
@@ -342,6 +344,56 @@
            ADD 1 TO PC END-ADD.
        E-OFFER-FN.
       *----------*
+           EXIT.
+
+       E-RECEIVE.
+      *-----------*
++DEBUG*    PERFORM PRINT-DEBUG THRU PRINT-DEBUG-FN.
++DEBUG*    DISPLAY "  == EXECUTING E-RECEIVE" END-DISPLAY.
+           MOVE OPERAND OF INSTRUCTION (PC) TO IDX-P       OF IDX.
+           MOVE "I"                         TO DIRECTION   OF IDX.
+           PERFORM CORRECT-INDEX THRU CORRECT-INDEX-FN.
+           DISPLAY "> " WITH NO ADVANCING END-DISPLAY.
+           ACCEPT RECEIVE-IN END-ACCEPT.
++DEBUG*    DISPLAY "   - Accepted: "RECEIVE-IN END-DISPLAY.
+           MOVE 0 TO RECEIVE-LEN.
+           PERFORM VARYING I FROM 1 BY 1 UNTIL RECEIVE-IN(I:1) = SPACE
+                                                             OR I > 30
+             IF RECEIVE-IN(I:1) NOT = SPACE
+               ADD 1 TO RECEIVE-LEN END-ADD
+             END-IF
+           END-PERFORM.
+
+           IF RECEIVE-IN(1:RECEIVE-LEN) IS NUMERIC
++DEBUG*    DISPLAY "   - Input is numeric." END-DISPLAY 
+             MOVE RECEIVE-IN(1:3) TO RAM(IDX-C OF IDX)
+             IF X > 255
+               STRING 
+                 "I-RECEIVE | Number is too big: " DELIMITED BY SIZE
+                 RECEIVE-IN DELIMITED BY SPACE
+                 INTO ERROR-STRING
+               END-STRING
+               GO EXIT-PROGRAM
+             END-IF
+           ELSE
++DEBUG*    DISPLAY "   - Input is not numeric." END-DISPLAY 
+             IF RECEIVE-LEN = 1
+               MOVE FUNCTION ORD(RECEIVE-IN(1:1)) TO RAM(IDX-C OF IDX)
+             ELSE
+               STRING 
+                 "I-RECEIVE | Can only receive single letters: " 
+                 DELIMITED BY SIZE
+                 RECEIVE-IN DELIMITED BY SPACE
+                 INTO ERROR-STRING
+               END-STRING
+               GO EXIT-PROGRAM
+             END-IF
+           END-IF.
++DEBUG*    DISPLAY "   - Received " RAM(IDX-C OF IDX) " from input " 
++DEBUG*         "into ["IDX-P OF IDX"]("IDX-C OF IDX")" END-DISPLAY.
+           ADD 1 TO PC END-ADD.
+       E-RECEIVE-FN.
+      *--------------*
            EXIT.
 
        PRINT-DEBUG.
