@@ -121,6 +121,8 @@
                  PERFORM E-OFFER    THRU E-OFFER-FN
                WHEN "r"
                  PERFORM E-RECEIVE  THRU E-RECEIVE-FN
+               WHEN "b"
+                 PERFORM E-BRANCH   THRU E-BRANCH-FN
                WHEN OTHER
                  PERFORM I-NOOP     THRU I-NOOP-FN
              END-EVALUATE
@@ -393,6 +395,28 @@
 +DEBUG*         "into ["IDX-P OF IDX"]("IDX-C OF IDX")" END-DISPLAY.
            ADD 1 TO PC END-ADD.
        E-RECEIVE-FN.
+      *--------------*
+           EXIT.
+
+       E-BRANCH.
+      *-----------*
++DEBUG*    PERFORM PRINT-DEBUG THRU PRINT-DEBUG-FN.
++DEBUG*    DISPLAY "  == EXECUTING E-BRANCH" END-DISPLAY.
+           IF X = 0
+              MOVE OPERAND OF INSTRUCTION (PC) TO IDX-P     OF IDX
+              MOVE "I"                         TO DIRECTION OF IDX
++DEBUG*    DISPLAY "   - Direct address is   ["IDX-P OF IDX"]("
++DEBUG*            IDX-C OF IDX")" END-DISPLAY
+              PERFORM CORRECT-INDEX THRU CORRECT-INDEX-FN
+              MOVE RAM(IDX-C)                  TO IDX-P     OF IDX
+              PERFORM CORRECT-INDEX THRU CORRECT-INDEX-FN
++DEBUG*    DISPLAY "   - Branching to ["IDX-P OF IDX"]("
++DEBUG*                                 IDX-C OF IDX")" END-DISPLAY
+              MOVE IDX-C OF IDX TO PC
+           ELSE
+             ADD 1 TO PC END-ADD
+           END-IF.
+       E-BRANCH-FN.
       *--------------*
            EXIT.
 
