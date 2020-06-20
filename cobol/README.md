@@ -27,7 +27,7 @@ Implemented instructions:
 - [x] o
 - [x] r
 - [x] b
-- [ ] i
+- [x] i
 - [ ] t
 - [ ] s
 - [ ] a

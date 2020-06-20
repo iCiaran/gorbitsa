@@ -123,6 +123,8 @@
                  PERFORM E-RECEIVE  THRU E-RECEIVE-FN
                WHEN "b"
                  PERFORM E-BRANCH   THRU E-BRANCH-FN
+               WHEN "i"
+                 PERFORM E-INCREASE THRU E-INCREASE-FN
                WHEN OTHER
                  PERFORM I-NOOP     THRU I-NOOP-FN
              END-EVALUATE
@@ -417,6 +419,24 @@
              ADD 1 TO PC END-ADD
            END-IF.
        E-BRANCH-FN.
+      *--------------*
+           EXIT.
+
+       E-INCREASE.
+      *-----------*
++DEBUG*    PERFORM PRINT-DEBUG THRU PRINT-DEBUG-FN.
++DEBUG*    DISPLAY "  == EXECUTING E-INCREASE" END-DISPLAY.
+           MOVE OPERAND OF INSTRUCTION (PC) TO IDX-P     OF IDX
+           MOVE "I"                         TO DIRECTION OF IDX
+           ADD X TO RAM(IDX-C) END-ADD.
++DEBUG*    DISPLAY "   - Adding " X " to ["IDX-P OF IDX"]("
++DEBUG*            IDX-C OF IDX")" END-DISPLAY
+           IF RAM(IDX-C) > 255
++DEBUG*    DISPLAY "   - Overflowed RAM(IDX-C)="RAM(IDX-C) END-DISPLAY
+             SUBTRACT 256 FROM RAM(IDX-C) END-SUBTRACT
+           END-IF.
+           ADD 1 TO PC END-ADD.
+       E-INCREASE-FN.
       *--------------*
            EXIT.
 
