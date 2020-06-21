@@ -219,6 +219,10 @@
 +DEBUG*    DISPLAY "   - Input is not numeric." END-DISPLAY 
              IF RECEIVE-LEN = 1
                MOVE FUNCTION ORD(RECEIVE-IN(1:1)) TO X
+               MOVE X                             TO IDX-C OF IDX
+               MOVE "O"                           TO DIRECTION OF IDX
+               PERFORM CORRECT-INDEX THRU CORRECT-INDEX-FN
+               MOVE IDX-P OF IDX                  TO X
              ELSE
                STRING 
                  "I-RECEIVE | Can only receive single letters: " 
