@@ -28,6 +28,6 @@ Implemented instructions:
 - [x] r
 - [x] b
 - [x] i
-- [ ] t
+- [x] t
 - [ ] s
 - [ ] a

@@ -95,7 +95,7 @@
       *------------*
 +DEBUG*    DISPLAY "====      START RUNNING PROGRAM       ====" 
 +DEBUG*    END-DISPLAY.
-           PERFORM UNTIL PC >= 256
+           PERFORM UNTIL PC > 256
              EVALUATE OPCODE OF INSTRUCTION (PC)
       * Base instructions
                WHEN "G"
@@ -125,6 +125,8 @@
                  PERFORM E-BRANCH   THRU E-BRANCH-FN
                WHEN "i"
                  PERFORM E-INCREASE THRU E-INCREASE-FN
+               WHEN "t"
+                 PERFORM E-TRANSMIT THRU E-TRANSMIT-FN
                WHEN OTHER
                  PERFORM I-NOOP     THRU I-NOOP-FN
              END-EVALUATE
@@ -437,6 +439,20 @@
            END-IF.
            ADD 1 TO PC END-ADD.
        E-INCREASE-FN.
+      *--------------*
+           EXIT.
+
+       E-TRANSMIT.
+      *-----------*
++DEBUG*    PERFORM PRINT-DEBUG THRU PRINT-DEBUG-FN.
++DEBUG*    DISPLAY "  == EXECUTING E-TRANSMIT" END-DISPLAY.
+           MOVE OPERAND OF INSTRUCTION (PC) TO IDX-P     OF IDX
+           MOVE "I"                         TO DIRECTION OF IDX
++DEBUG*    DISPLAY "   - Direct address: ["IDX-P OF IDX"]("
++DEBUG*            IDX-C OF IDX")" END-DISPLAY
+           DISPLAY RAM(IDX-C OF IDX) END-DISPLAY.
+           ADD 1 TO PC END-ADD.
+       E-TRANSMIT-FN.
       *--------------*
            EXIT.
 
