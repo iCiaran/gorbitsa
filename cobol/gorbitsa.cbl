@@ -127,6 +127,8 @@
                  PERFORM E-INCREASE THRU E-INCREASE-FN
                WHEN "t"
                  PERFORM E-TRANSMIT THRU E-TRANSMIT-FN
+               WHEN "a"
+                 PERFORM E-ADD      THRU E-ADD-FN
                WHEN OTHER
                  PERFORM I-NOOP     THRU I-NOOP-FN
              END-EVALUATE
@@ -453,6 +455,31 @@
            DISPLAY RAM(IDX-C OF IDX) END-DISPLAY.
            ADD 1 TO PC END-ADD.
        E-TRANSMIT-FN.
+      *--------------*
+           EXIT.
+
+       E-ADD.
+      *-----------*
++DEBUG*    PERFORM PRINT-DEBUG THRU PRINT-DEBUG-FN.
++DEBUG*    DISPLAY "  == EXECUTING E-ADD" END-DISPLAY.
+           MOVE OPERAND OF INSTRUCTION (PC) TO IDX-P     OF IDX.
+           MOVE "I"                         TO DIRECTION OF IDX.
+           PERFORM CORRECT-INDEX          THRU CORRECT-INDEX-FN.
++DEBUG*    DISPLAY "   - Indirect address is ["IDX-P OF IDX"]("
++DEBUG*            IDX-C OF IDX")" END-DISPLAY.
+           MOVE RAM (IDX-C)                 TO IDX-P     OF IDX.
+           PERFORM CORRECT-INDEX          THRU CORRECT-INDEX-FN.
++DEBUG*    DISPLAY "   - Direct address is   ["IDX-P OF IDX"]("
++DEBUG*            IDX-C OF IDX")" END-DISPLAY.
++DEBUG*    DISPLAY "   - Adding " RAM(IDX-C OF IDX) " to X from "
++DEBUG*            "["IDX-P OF IDX"]("IDX-C OF IDX")" END-DISPLAY.
+           ADD RAM(IDX-C OF IDX) TO X END-ADD.
+           IF X > 255
++DEBUG*    DISPLAY "   - Overflowed X="X END-DISPLAY
+             SUBTRACT 256 FROM X END-SUBTRACT
+           END-IF.
+           ADD 1 TO PC END-ADD.
+       E-ADD-FN.
       *--------------*
            EXIT.
 

@@ -29,5 +29,5 @@ Implemented instructions:
 - [x] b
 - [x] i
 - [x] t
-- [ ] s
+- [x] s
 - [ ] a
