@@ -30,4 +30,4 @@ Implemented instructions:
 - [x] i
 - [x] t
 - [x] s
-- [ ] a
+- [x] a

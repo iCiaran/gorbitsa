@@ -35,6 +35,8 @@
        01 RECEIVE-IN-X         PIC 9(3).
        01 RECEIVE-LEN          PIC 9(2).
        01 I                    PIC 9(2).
+       01 XOR-A                PIC 9(3) COMP-5.
+       01 XOR-B                PIC 9(3) COMP-5.
 
        PROCEDURE DIVISION.
            PERFORM LOAD-PROGRAM THRU LOAD-PROGRAM-FN.
@@ -127,6 +129,8 @@
                  PERFORM E-INCREASE THRU E-INCREASE-FN
                WHEN "t"
                  PERFORM E-TRANSMIT THRU E-TRANSMIT-FN
+               WHEN "s"
+                 PERFORM E-SET      THRU E-SET-FN
                WHEN "a"
                  PERFORM E-ADD      THRU E-ADD-FN
                WHEN OTHER
@@ -455,6 +459,27 @@
            DISPLAY RAM(IDX-C OF IDX) END-DISPLAY.
            ADD 1 TO PC END-ADD.
        E-TRANSMIT-FN.
+      *--------------*
+           EXIT.
+
+       E-SET.
+      *-----------*
++DEBUG*    PERFORM PRINT-DEBUG THRU PRINT-DEBUG-FN.
++DEBUG*    DISPLAY "  == EXECUTING E-SET" END-DISPLAY.
+           MOVE OPERAND OF INSTRUCTION (PC) TO IDX-P     OF IDX
+           MOVE "I"                         TO DIRECTION OF IDX
++DEBUG*    DISPLAY "   - XOR " X " with "RAM(IDX-C OF IDX)
++DEBUG*    " from ["IDX-P OF IDX"]("IDX-C OF IDX")" END-DISPLAY.
+           MOVE X                           TO XOR-A.
+           MOVE RAM(IDX-C OF IDX)           TO XOR-B.
+           CALL "CBL_XOR" USING XOR-A,
+                                XOR-B,
+                                BY VALUE 1
+           END-CALL.
+           MOVE XOR-B                       TO X.
++DEBUG*    DISPLAY "   - Storing result " X " in X" END-DISPLAY.
+           ADD 1 TO PC END-ADD.
+       E-SET-FN.
       *--------------*
            EXIT.
 
